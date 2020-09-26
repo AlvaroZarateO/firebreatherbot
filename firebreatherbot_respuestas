@@ -1,0 +1,80 @@
+#########################################
+###### FIREBREATHERBOT: Respuestas ######
+#########################################
+
+#Paquetes
+import tweepy
+import time
+import re
+#Paquetes de aleatorización
+from random import randint
+
+#Datos
+apikey = "huMmU0gwOvV6MqQpQVj86s7Jp"
+apisecretkey = "ylsdlhxhdecEtg536y9c2UUiyQ8iBQ7p7UANWfJjNw8f6DL4tQ"
+token = "AAAAAAAAAAAAAAAAAAAAAC0GIAEAAAAA6lFTH1fZuUKtIHdfi1WvcsArRnQ%3DicU27TWhggXEAA4MRGdSOUwL1aWTawPnfl3adZJb34QIKU64Eq"
+
+accesstoken = "1309007768557441024-qnp3M2f6abdVr6OqdlIkuPSWbzHV4c"
+accesstoken_sec = "kEiXuyM6cTpaFfAnOBWVYEmuwinLjb5FhO4ap2maQOwFP"
+
+#Entrando a twitter#
+auth = tweepy.OAuthHandler(apikey, apisecretkey) #Autentificar la API
+auth.set_access_token(accesstoken, accesstoken_sec) #Autentificar el token
+api = tweepy.API(auth, wait_on_rate_limit=True)
+
+#Función para responder tweet si hay mención
+archivo = 'last_seen_id.txt'
+
+def retrieve_last_seen_id(archivo):
+    leer_archivo = open(archivo, 'r')
+    last_seen_id = int(leer_archivo.read().strip())
+    leer_archivo.close()
+    return last_seen_id
+
+def store_last_seen_id(last_seen_id,archivo):
+    escribir_archivo = open(archivo, 'w')
+    escribir_archivo.write(str(last_seen_id))
+    escribir_archivo.close
+    return
+
+def extract_song(path=None):
+    if not path:
+        return '¡No hay canción!'
+    try:
+        with open(path, 'r', encoding='ascii', errors='surrogateescape') as cancion:
+            texto = cancion.read()
+        if texto:
+            return buscar_cancion(texto)
+    except:
+        print('Canción no encontrada.') 
+
+def buscar_cancion(texto):
+    status = 200
+    while not 5 < status < 125:
+        #Generando numero aleatorio
+        index = randint(0, len(texto))
+        #Generando indice inicial
+        init_index = texto[index:].find('.') + 2 + index
+        last_index = texto[init_index:].find('.') + 2 + init_index
+        status = len(texto[init_index:last_index])
+    song = texto[init_index:last_index]
+    song = re.sub('\n', " ", song)
+    return song
+
+def respondiendo_tweets():
+    print('Recibiendo y respondiendo tweets...')
+    last_seen_id = retrieve_last_seen_id(archivo)
+    menciones = api.mentions_timeline(
+                last_seen_id,
+                tweet_mode='extended')
+    for mencion in reversed(menciones):
+        print(str(mencion.id) + ' ' + mencion.full_text)
+        last_seen_id = mencion.id
+        store_last_seen_id(last_seen_id, archivo)
+        song = extract_song('discografia.txt')
+        if '#imaginedragons' in mencion.full_text.lower():
+            api.update_status('@' + mencion.user.screen_name + ' ' + 'Creo que deberías escuchar:' + ' ' + song, mencion.id)
+        
+while True:
+    respondiendo_tweets()
+    time.sleep(10)
