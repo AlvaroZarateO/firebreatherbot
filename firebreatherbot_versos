@@ -1,0 +1,67 @@
+#####################################
+###### FIREBREATHERBOT: Versos ######
+#####################################
+
+#Paquetes
+import tweepy
+import time
+import re
+#Paquetes de aleatorización
+from random import randint
+
+#Datos
+apikey = ""
+apisecretkey = ""
+token = ""
+
+accesstoken = ""
+accesstoken_sec = ""
+
+#Entrando a twitter#
+def twitter_setup():
+    auth = tweepy.OAuthHandler(apikey, apisecretkey) #Autentificar la API
+    auth.set_access_token(accesstoken, accesstoken_sec) #Autentificar el token
+    api = tweepy.API(auth)
+    return api
+
+#Funcion para pasar el camino al texto
+def extract_status(path=None):
+    if not path:
+        return '¡No hay canción!'
+    try:
+        with open(path, 'r', encoding='ascii', errors='surrogateescape') as cancion:
+            texto = cancion.read()
+        if texto:
+            return buscar_verso(texto)
+    except:
+        print('Canción no encontrada.') 
+
+
+#Funcion para buscar los versos en la cancion
+def buscar_verso(texto):
+    status = 200
+    while not 5 < status < 125:
+        #Generando numero aleatorio
+        index = randint(0, len(texto))
+        #Generando indice inicial
+        init_index = texto[index:].find('.') + 2 + index
+        last_index = texto[init_index:].find('.') + 2 + init_index
+        status = len(texto[init_index:last_index])
+    verso = texto[init_index:last_index]
+    verso = re.sub('\n', " ", verso)
+    return verso
+
+if __name__ == '__main__':
+    bot = twitter_setup()
+    tiempo = 100
+    while True:
+        status = extract_status('nightvisions.txt')
+        try:
+            bot.update_status(status)
+            print('Listo, tweet mandado!')
+        except tweepy.TweepError as e:
+            print(e.reason)
+        time.sleep(tiempo)
+
+
+    
