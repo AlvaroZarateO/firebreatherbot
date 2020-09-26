@@ -10,12 +10,12 @@ import re
 from random import randint
 
 #Datos
-apikey = "huMmU0gwOvV6MqQpQVj86s7Jp"
-apisecretkey = "ylsdlhxhdecEtg536y9c2UUiyQ8iBQ7p7UANWfJjNw8f6DL4tQ"
-token = "AAAAAAAAAAAAAAAAAAAAAC0GIAEAAAAA6lFTH1fZuUKtIHdfi1WvcsArRnQ%3DicU27TWhggXEAA4MRGdSOUwL1aWTawPnfl3adZJb34QIKU64Eq"
+apikey = ""
+apisecretkey = ""
+token = ""
 
-accesstoken = "1309007768557441024-qnp3M2f6abdVr6OqdlIkuPSWbzHV4c"
-accesstoken_sec = "kEiXuyM6cTpaFfAnOBWVYEmuwinLjb5FhO4ap2maQOwFP"
+accesstoken = ""
+accesstoken_sec = ""
 
 #Entrando a twitter#
 auth = tweepy.OAuthHandler(apikey, apisecretkey) #Autentificar la API
